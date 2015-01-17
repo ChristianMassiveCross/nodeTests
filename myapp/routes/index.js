@@ -23,6 +23,22 @@ router.get('/userlist', function(req, res) {
 router.get('/newuser', function(req, res) {
     res.render('newuser', { title: 'Add New User' });
 });
+
+router.post('/deluser',function(request, response){
+	var dbHandle = request.db;
+	var deleteIdentifyer = request.body.ident;
+    console.log('delete User by id:'+deleteIdentifyer);
+    var collection = dbHandle.get('wurst');
+	collection.remove({"_id" : deleteIdentifyer },function (err, doc) {
+        if (err) {
+            response.send("There was a problem with delete.");
+        }
+        else {
+            response.location("userlist");
+            response.redirect("userlist");
+        }
+    });
+});
 /* POST to Add User Service */
 router.post('/adduser', function(req, res) {
 
@@ -32,6 +48,7 @@ router.post('/adduser', function(req, res) {
     // Get our form values. These rely on the "name" attributes
     var userName = req.body.username;
     var userEmail = req.body.useremail;
+    var userBrot = req.body.userbrot;
 
     // Set our collection
     var collection = db.get('wurst');
@@ -39,7 +56,8 @@ router.post('/adduser', function(req, res) {
     // Submit to the DB
     collection.insert({
         "username" : userName,
-        "email" : userEmail
+        "email" : userEmail,
+        "unserBrot" : userBrot
     }, function (err, doc) {
         if (err) {
             // If it failed, return error
